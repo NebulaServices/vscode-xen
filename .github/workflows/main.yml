@@ -67,7 +67,7 @@ jobs:
         with:
           name: Continuous Build
           tag: latest
-          commit: main
+          commit: master
           body: "${{ github.event.head_commit.url }} ${{ github.event.head_commit.message }}"
           artifacts: "vscode.app.zip"
           prerelease: true
