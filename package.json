@@ -1,7 +1,10 @@
 {
-  "name": "node-starter",
-  "version": "0.0.0",
+  "name": "vscode-anura",
+  "version": "1.91.1",
+  "workspaces": ["./myDav", "./myExt"],
   "scripts": {
+    "build": "cd myDav && pnpm build",
+    "package": "bash package.sh",
     "start": "node ./http.js"
   },
   "dependencies": {
