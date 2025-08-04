@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { FileStat, WebDAVClient, WebDAVClientOptions, WebDAVClientError, AuthType, createClient } from 'webdav';
 import { parse } from 'date-fns';
-import {Buffer} from "buffer"
+import { Buffer } from "buffer"
 
 globalThis.Buffer = Buffer;
 console.log(Buffer)
@@ -37,33 +37,39 @@ export async function resetAuth() {
 }
 
 export async function openWebdav() {
-    let uriValue = (await ((await fetch("/showFilePicker?type=folder")).json()))["folders"][0]
-    
-    if (!uriValue) {
-        return;
-    } else {
-        uriValue = location.origin + "/dav" + uriValue
+    try {
+        let f = await fetch("/showFilePicker?type=folder");
+        let jf = await f.json();
+        let uriValue = jf.result.path;
+
+        if (!uriValue) {
+            return;
+        } else {
+            uriValue = location.origin + "/dav" + uriValue;
+        }
+
+        let webdavUri = vscode.Uri.parse(uriValue.trim().replace(/^http/i, 'webdav'));
+
+        // let name = await vscode.window.showInputBox({
+        //     placeHolder: 'Press ENTER to use default ...',
+        //     value: webdavUri.authority,
+        //     prompt: "Custom name for Remote WebDAV"
+        // });
+
+        let name = uriValue.split("/").pop()
+
+        await configureAuthForUri(toBaseUri(webdavUri));
+
+        vscode.workspace.updateWorkspaceFolders(
+            0, 0,
+            {
+                uri: webdavUri,
+                name: name?.trim() ?? webdavUri.authority,
+            },
+        );
+    } catch (err) {
+        console.error(err);
     }
-
-    let webdavUri = vscode.Uri.parse(uriValue.trim().replace(/^http/i, 'webdav'));
-
-    // let name = await vscode.window.showInputBox({
-    //     placeHolder: 'Press ENTER to use default ...',
-    //     value: webdavUri.authority,
-    //     prompt: "Custom name for Remote WebDAV"
-    // });
-
-    let name = uriValue.split("/").pop()
-
-    await configureAuthForUri(toBaseUri(webdavUri));
-
-    vscode.workspace.updateWorkspaceFolders(
-        0, 0,
-        {
-            uri: webdavUri,
-            name: name?.trim() ?? webdavUri.authority,
-        },
-    );
 }
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -113,8 +119,8 @@ export async function configureAuthForUri(uriKey: string): Promise<void> {
     delete connections[uriKey]; // The conections are keyed on the baseUri
     let authOptions = ["None", "Basic", "Digest"];
 
-    let settings: AuthSettings = { 
-        auth: "None" 
+    let settings: AuthSettings = {
+        auth: "None"
     };
     if (settings.auth === "Basic" || settings.auth === "Digest") {
         settings.user = await vscode.window.showInputBox({ prompt: "Username", placeHolder: `Username for login to ${uriKey}` });
@@ -243,7 +249,7 @@ export class WebDAVFileSystemProvider implements vscode.FileSystemProvider {
 
     public async writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): Promise<void> {
         return await this.forConnection("stat", uri, async webdav => {
-            (await fetch (toWebDAVPath(uri), {method: "PUT", body: new Blob([content])}))
+            (await fetch(toWebDAVPath(uri), { method: "PUT", body: new Blob([content]) }))
 
             // await this.throwIfWriteFileIsNotAllowed(uri, options);
             // await webdav.putFileContents(toWebDAVPath(uri), content, { overwrite: options.overwrite });

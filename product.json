@@ -21,11 +21,11 @@
   "additionalBuiltinExtensions": [
     {
       "scheme": "http",
-      "path": "/fs/mntanura.app/myExt"
+      "path": "/fs/usr/apps/dev.vscode/myExt"
     },
     {
       "scheme": "http",
-      "path": "/fs/mntanura.app/myDav"
+      "path": "/fs/usr/apps/dev.vscode/myDav"
     }
   ]
 }

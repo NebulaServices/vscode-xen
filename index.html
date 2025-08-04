@@ -27,6 +27,7 @@
   </head>
 
   <body aria-label=""></body>
+  <!--
   <script type="module">
 const productData = `{
   "productConfiguration": {
@@ -60,17 +61,19 @@ const productData = `{
   ]
 }
 `
+    setTimeout(async () => {
     try {
-      const fileData = await top.anura.fs.promises.readFile("/" + location.pathname.split("/").slice(2,-1).join("/") + "/product.json", productData);
-      if (new TextDecoder().decode(fileData) !== productData) {
+      const fileData = JSON.stringify(await window.xen.fs.read(window.runtime.url + "/product.json"/*, productData*/));
+      if (fileData !== productData) {
         throw new Error("Product data outdated")
       }
     } catch {
-      await top.anura.fs.promises.writeFile("/" + location.pathname.split("/").slice(2,-1).join("/") + "/product.json", productData)
+      await window.xen.fs.write(window.runtime.url + "/product.json", productData)
       location.reload();
     }
+    }, 500);
   </script>
-  <!-- Startup (do not modify order of script tags!) -->
+  -->
   <script src="./node_modules/vscode-web/dist/out/vs/loader.js"></script>
   <script src="./node_modules/vscode-web/dist/out/vs/webPackagePaths.js"></script>
   <script>
