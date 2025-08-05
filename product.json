@@ -26,6 +26,14 @@
     {
       "scheme": "http",
       "path": "/fs/usr/apps/dev.vscode/myDav"
+    },
+    {
+      "scheme": "https",
+      "path": "/fs/usr/apps/dev.vscode/myExt"
+    },
+    {
+      "scheme": "https",
+      "path": "/fs/usr/apps/dev.vscode/myDav"
     }
   ]
 }
